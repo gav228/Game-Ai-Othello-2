@@ -58,7 +58,7 @@ public class BoardScript : MonoBehaviour {
          * to change who-plays-what and which AI to use to avoid having to change these manually.
          */
 
-        isPlayerOneAI = true;
+        isPlayerOneAI = false;
         isPlayerTwoAI = true;
 
         /* For the calls to System.Reflection.Assembly.GetExecutingAssembly() below, enter the
@@ -70,7 +70,7 @@ public class BoardScript : MonoBehaviour {
 
         possibleMovesArray = new List<GameObject>();
         if (isPlayerOneAI) {
-            System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType("RandomAI");
+            System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType("NegamaxAI");
             //System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType(playerOneScriptClassName);
             System.Object o = Activator.CreateInstance(scriptType);
             playerOneScript = (AIScript)o;
@@ -78,7 +78,7 @@ public class BoardScript : MonoBehaviour {
         }
         if (isPlayerTwoAI) {
             //System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType(playerTwoScriptClassName);
-            System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType("NegamaxAI");
+            System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType("ABNegamaxAI");
             System.Object o = Activator.CreateInstance(scriptType);
             playerTwoScript = (AIScript)o;
             playerTwoScript.setColor(BoardSpace.WHITE);

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NegamaxAI : AIScript {
+public class ABNegamaxAI : AIScript
+{
 
 
     public override KeyValuePair<int, int> makeMove(List<KeyValuePair<int, int>> availableMoves, BoardSpace[][] currentBoard)
@@ -12,18 +13,18 @@ public class NegamaxAI : AIScript {
         {
             turnNumber = 1;
         }
-        KeyValuePair<KeyValuePair<int, int>, int> negamaxResults = Negamax(currentBoard, 5, 0, turnNumber);
+        KeyValuePair<KeyValuePair<int, int>, int> negamaxResults = abNegamax(currentBoard, 7, 0, turnNumber, int.MinValue, int.MaxValue);
         return negamaxResults.Key;
     }
 
     // Needs to return the move and the score
-    public KeyValuePair<KeyValuePair<int, int>, int> Negamax(BoardSpace[][] currentBoard, int MaxDepth, int currentDepth, uint turnNumber)
+    public KeyValuePair<KeyValuePair<int, int>, int> abNegamax(BoardSpace[][] currentBoard, int MaxDepth, int currentDepth, uint turnNumber, int alpha, int beta)
     {
-       
+
         // Check if the game finished while we were recursing
-        if(isGameOver(currentBoard) ||currentDepth == MaxDepth)
+        if (isGameOver(currentBoard) || currentDepth == MaxDepth)
         {
-            return new KeyValuePair<KeyValuePair<int, int>, int>(new KeyValuePair<int, int>(-1,-1),evaluate(currentBoard, turnNumber));
+            return new KeyValuePair<KeyValuePair<int, int>, int>(new KeyValuePair<int, int>(-1, -1), evaluate(currentBoard, turnNumber));
         }
 
         // Other wise bubble up values from below
@@ -42,29 +43,34 @@ public class NegamaxAI : AIScript {
             for (int j = 0; j < 8; ++j)
             {
                 newBoard[j] = new BoardSpace[8];
-                for(int k = 0; k < 8; k++)
+                for (int k = 0; k < 8; k++)
                 {
                     newBoard[j][k] = currentBoard[j][k];
                 }
             }
-            
+
             // Do the move
-            PlacePiece(newBoard, move.Value,move.Key, turnNumber);
+            PlacePiece(newBoard, move.Value, move.Key, turnNumber);
 
             // Recurse
-            KeyValuePair<KeyValuePair<int, int>, int> result = Negamax(newBoard, MaxDepth, currentDepth + 1, turnNumber + 1);
+            KeyValuePair<KeyValuePair<int, int>, int> result = abNegamax(newBoard, MaxDepth, currentDepth + 1, turnNumber + 1, -beta, -Mathf.Max(alpha, bestScore));
 
             int currentScore = -result.Value;
-            
+
             // Update the best score
             if (currentScore > bestScore)
             {
                 bestScore = currentScore;
                 bestMove = move;
+
+                if(bestScore >= beta)
+                {
+                    return new KeyValuePair<KeyValuePair<int, int>, int>(bestMove, bestScore);
+                }
             }
-            
+
         }
-        
+
         return new KeyValuePair<KeyValuePair<int, int>, int>(bestMove, bestScore);
     }
 
@@ -75,12 +81,12 @@ public class NegamaxAI : AIScript {
         {
             foreach (BoardSpace space in row)
             {
-                if(space == BoardSpace.EMPTY)
+                if (space == BoardSpace.EMPTY)
                 {
                     return false;
                 }
             }
-            
+
         }
         return true;
     }
@@ -96,12 +102,13 @@ public class NegamaxAI : AIScript {
                 boardRow += space + "\t";
             }
             boardRow += "\n";
-            
+
         }
         Debug.Log(boardRow);
-       
+
     }
 
+    // Static evaluation function with weights, corners are weighted more heavily
     public int evaluate(BoardSpace[][] Board, uint turnNumber)
     {
         BoardSpace ourColor = turnNumber % 2 == 0 ? BoardSpace.BLACK : BoardSpace.WHITE;
@@ -128,7 +135,7 @@ public class NegamaxAI : AIScript {
             }
 
         }
-        if(Board[0][0] == ourColor)
+        if (Board[0][0] == ourColor)
         {
             count += 20;
         }
@@ -163,13 +170,14 @@ public class NegamaxAI : AIScript {
         return count;
     }
 
-    
-    public void PlacePiece(BoardSpace[][] board, int x, int y, uint turnNumber) { 
+
+    public void PlacePiece(BoardSpace[][] board, int x, int y, uint turnNumber)
+    {
         //instantiate piece at position and add to that side's points
-        
+
         if (turnNumber % 2 == 0)
         {
-           
+
             board[y][x] = BoardSpace.BLACK;
         }
         else
@@ -177,25 +185,25 @@ public class NegamaxAI : AIScript {
             board[y][x] = BoardSpace.WHITE;
         }
 
-     
-        List<KeyValuePair<int, int>> changedSpaces = GetPointsChangedFromMove(board, turnNumber,x,y);
+
+        List<KeyValuePair<int, int>> changedSpaces = GetPointsChangedFromMove(board, turnNumber, x, y);
         foreach (KeyValuePair<int, int> space in changedSpaces)
         {
-                
+
             if (turnNumber % 2 == 0)
             {
-                    
+
                 board[space.Key][space.Value] = BoardSpace.BLACK;
             }
             else
             {
-                    
+
                 board[space.Key][space.Value] = BoardSpace.WHITE;
             }
         }
-        
+
     }
-    
+
     public static List<KeyValuePair<int, int>> GetPointsChangedFromMove(BoardSpace[][] board, uint turnNumber, int x, int y)
     {
         //determines how much a move changed the overall point value
