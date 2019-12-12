@@ -5,7 +5,7 @@ using UnityEngine;
 public class ABNegamaxAI : AIScript
 {
 
-
+    // AB Negamax's performance increase allowed me to set the depth to 7 making it a much stronger contender than reglar negamax in most cases
     public override KeyValuePair<int, int> makeMove(List<KeyValuePair<int, int>> availableMoves, BoardSpace[][] currentBoard)
     {
         uint turnNumber = 0;
@@ -167,6 +167,46 @@ public class ABNegamaxAI : AIScript
         {
             count -= 20;
         }
+        return count;
+    }
+
+    // A second static evaluation function for this assignment
+    public int evaluate2(BoardSpace[][] Board, uint turnNumber)
+    {
+        BoardSpace ourColor = turnNumber % 2 == 0 ? BoardSpace.BLACK : BoardSpace.WHITE;
+        int count = 0;
+        int[] arr1 = new[] { 15, 10, 10, 10, 10, 10, 10, 15 };
+        int[] arr2 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr3 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr4 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr5 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr6 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr7 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr8 = new[] { 15, 10, 10, 10, 10, 10, 10, 15 };
+        int[][] values = new[] { arr1, arr2, arr3, arr4, arr5, arr6, arr7, arr8 };
+
+        for (int j = 0; j < 8; ++j)
+        {
+            for (int k = 0; k < 8; k++)
+            {
+                if (Board[j][k] == ourColor)
+                {
+                    count += values[j][k];
+                }
+            }
+        }
+
+        for (int j = 0; j < 8; ++j)
+        {
+            for (int k = 0; k < 8; k++)
+            {
+                if (Board[j][k] != ourColor && Board[j][k] != BoardSpace.EMPTY)
+                {
+                    count -= values[j][k];
+                }
+            }
+        }
+
         return count;
     }
 

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class NegamaxAI : AIScript {
 
-
+  
+ 
+    // regular negamax set to a depth of 5 which is roughly the performance limit before it starts to get too slow
     public override KeyValuePair<int, int> makeMove(List<KeyValuePair<int, int>> availableMoves, BoardSpace[][] currentBoard)
     {
         uint turnNumber = 0;
@@ -102,6 +104,7 @@ public class NegamaxAI : AIScript {
        
     }
 
+    // Evaluate function 1, counts number of pieces and heavily weights corners
     public int evaluate(BoardSpace[][] Board, uint turnNumber)
     {
         BoardSpace ourColor = turnNumber % 2 == 0 ? BoardSpace.BLACK : BoardSpace.WHITE;
@@ -163,7 +166,47 @@ public class NegamaxAI : AIScript {
         return count;
     }
 
-    
+    // A second static evaluation function for this assignment has priority values for each space, prioritizes corners and edges slightly
+    public int evaluate2(BoardSpace[][] Board, uint turnNumber)
+    {
+        BoardSpace ourColor = turnNumber % 2 == 0 ? BoardSpace.BLACK : BoardSpace.WHITE;
+        int count = 0;
+        int[] arr1 = new[] { 15, 10, 10, 10, 10, 10, 10, 15 };
+        int[] arr2 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr3 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr4 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr5 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr6 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr7 = new[] { 10, 5, 5, 5, 5, 5, 5, 10 };
+        int[] arr8 = new[] { 15, 10, 10, 10, 10, 10, 10, 15 };
+        int[][] values = new[] { arr1, arr2, arr3, arr4, arr5, arr6, arr7, arr8 };
+
+        for (int j = 0; j < 8; ++j)
+        {
+            for (int k = 0; k < 8; k++)
+            {
+                if (Board[j][k] == ourColor)
+                {
+                    count += values[j][k];
+                }
+            }
+        }
+
+        for (int j = 0; j < 8; ++j)
+        {
+            for (int k = 0; k < 8; k++)
+            {
+                if (Board[j][k] != ourColor && Board[j][k] != BoardSpace.EMPTY)
+                {
+                    count -= values[j][k];
+                }
+            }
+        }
+
+        return count;
+    }
+
+
     public void PlacePiece(BoardSpace[][] board, int x, int y, uint turnNumber) { 
         //instantiate piece at position and add to that side's points
         
