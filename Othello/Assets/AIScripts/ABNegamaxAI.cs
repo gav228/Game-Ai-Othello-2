@@ -5,7 +5,7 @@ using UnityEngine;
 public class ABNegamaxAI : AIScript
 {
 
-    // AB Negamax's performance increase allowed me to set the depth to 7 making it a much stronger contender than reglar negamax in most cases
+    // AB Negamax's performance increase allowed me to set the depth to 7 making it a much stronger contender than reglar negamax in most cases. Works best with evaluation function 1
     public override KeyValuePair<int, int> makeMove(List<KeyValuePair<int, int>> availableMoves, BoardSpace[][] currentBoard)
     {
         uint turnNumber = 0;
