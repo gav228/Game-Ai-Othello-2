@@ -40,6 +40,8 @@ public class BoardScript : MonoBehaviour {
     public Text bText;
     public Text wText;
     public Text tText;
+    public Text Player1B;
+    public Text Player1W;
     List<GameObject> possibleMovesArray;
     bool posMovesShown;
     void Awake() {
@@ -70,15 +72,17 @@ public class BoardScript : MonoBehaviour {
 
         possibleMovesArray = new List<GameObject>();
         if (isPlayerOneAI) {
-            System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType("NegamaxAI");
+            Player1B.text = playerOneScriptClassName ;
+            System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType(Player1B.text);
             //System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType(playerOneScriptClassName);
             System.Object o = Activator.CreateInstance(scriptType);
             playerOneScript = (AIScript)o;
             playerOneScript.setColor(BoardSpace.BLACK);
         }
         if (isPlayerTwoAI) {
+            Player1W.text = playerTwoScriptClassName;
             //System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType(playerTwoScriptClassName);
-            System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType("ABNegamaxAI");
+            System.Type scriptType = System.Reflection.Assembly.GetExecutingAssembly().GetType(Player1W.text);
             System.Object o = Activator.CreateInstance(scriptType);
             playerTwoScript = (AIScript)o;
             playerTwoScript.setColor(BoardSpace.WHITE);
